@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">HawaMahal</string>
+    <string name="title_song_detail">Song Detail</string>
+    <string name="tempmargin">Set +/- Temp</string>
+    <string name="settingslabel">Settings</string>
+    <string-array name="tempmargins">
+        <item>+/- 1°C</item>
+        <item>+/- 2°C</item>
+    </string-array>
+    <string-array name="tempvalues">
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+</resources>
