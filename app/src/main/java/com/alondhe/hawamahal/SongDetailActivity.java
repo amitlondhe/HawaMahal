@@ -36,9 +36,10 @@ public class SongDetailActivity extends AppCompatActivity {
             public void onClick(View view) {
 //                Snackbar.make(view, "Replace with your own detail action", Snackbar.LENGTH_LONG)
 //                        .setAction("Action", null).show();
-
-                String uri = "spotify:track:1kSMKgd40QI9ssiSL9ly4A";
-                uri = "https://open.spotify.com/track/4FHZLSP760Nirqm6Edotdl";
+                Song s = (Song)getIntent().getSerializableExtra("com.alondhe.hawamahal.Song");
+                String uri = s.getSongURL();
+                Log.d("Play =>",uri);
+//                uri = "https://open.spotify.com/track/4FHZLSP760Nirqm6Edotdl";
                 Intent launcher = new Intent( Intent.ACTION_VIEW, Uri.parse(uri) );
                 startActivity(launcher);
             }

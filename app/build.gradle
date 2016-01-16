@@ -26,6 +26,10 @@ android {
         exclude 'META-INF/NOTICE'
         exclude 'META-INF/services/com.fasterxml.jackson.core.JsonFactory'
     }
+
+    dexOptions {
+        javaMaxHeapSize "4g"
+    }
 }
 
 dependencies {
@@ -38,4 +42,6 @@ dependencies {
     compile 'org.pacesys:openstack4j-core:2.0.9'
     compile 'org.pacesys.openstack4j.connectors:openstack4j-httpclient:2.0.9'
     compile 'org.apache.httpcomponents:httpclient-android:4.3.3'
+    compile 'com.google.android.gms:play-services:8.1.0'
+    compile 'com.github.markushi:circlebutton:1.1'
 }

@@ -2,12 +2,12 @@ package com.alondhe.hawamahal;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.util.Log;
-import android.view.View;
+import android.view.Menu;
+import android.view.MenuItem;
 
 
 /**
@@ -35,25 +35,22 @@ public class SongListActivity extends AppCompatActivity
      */
     private boolean mTwoPane;
 
+    private String mCurrentTemp;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d("1", "On create of SongListActivity");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_song_app_bar);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setTitle(getTitle());
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-
-                Intent settingsIntent = new Intent(SongListActivity.this, SettingsActivity.class);
-                startActivity(settingsIntent);            }
-        });
+        // Show the Up button in the action bar.
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if(getCurrentTemp() == null) {
+            setCurrentTemp((String) getIntent().getSerializableExtra("com.alondhe.hawamahal.TEMP"));
+        }
 
         if (findViewById(R.id.song_detail_container) != null) {
             // The detail container view will be present only in the
@@ -78,7 +75,7 @@ public class SongListActivity extends AppCompatActivity
      */
     @Override
     public void onItemSelected(Song song) {
-        Log.d("item selected song", ""+ song.getSongName());
+        Log.d("item selected song", "" + song.getSongName());
         if (mTwoPane) {
             // In two-pane mode, show the detail view in this activity by
             // adding or replacing the detail fragment using a
@@ -98,5 +95,13 @@ public class SongListActivity extends AppCompatActivity
             detailIntent.putExtra("com.alondhe.hawamahal.Song",song);
             startActivity(detailIntent);
         }
+    }
+
+    public String getCurrentTemp() {
+        return mCurrentTemp;
+    }
+
+    public void setCurrentTemp(String mCurrentTemp) {
+        this.mCurrentTemp = mCurrentTemp;
     }
 }

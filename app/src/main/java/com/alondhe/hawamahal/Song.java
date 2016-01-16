@@ -12,6 +12,10 @@ public class Song implements java.io.Serializable {
 
     private static final String NA = "N/A";
 
+    Song() {
+
+    }
+
     Song(String songName) {
         this(songName,NA,NA,NA,NA);
     }

@@ -3,4 +3,21 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+
+    <color name="header">#FF4081</color> <!-- final #8606cd -->
+    <color name="body">#dacee0</color>
+
+    <!--
+    <color name="header">#FF9200</color>
+    <color name="body">#0974C7</color>
+
+    <color name="header">#ED2E6E</color>
+    <color name="body">#8DEF2E</color>
+
+    <color name="header">#DF00A8</color>
+    <color name="body">#BCF900</color>
+
+-->
+
+
 </resources>

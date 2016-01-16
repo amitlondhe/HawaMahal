@@ -29,6 +29,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.net.URL;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * A list fragment representing a list of Songs. This fragment
@@ -95,16 +97,15 @@ public class SongListFragment extends ListFragment {
 
     public Songs getMockRecoSongs(){
         Songs s = new Songs();
-        s.addSong(new Song("dummy1"));
-        s.addSong(new Song("dummy2"));
+//        s.addSong(new Song("dummy1"));
+//        s.addSong(new Song("dummy2"));
         return s;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d("1","On Create of SongListFragment");
-
+        Log.d("1", "On Create of SongListFragment");
         if(getMockRecoSongs().getRecommendedSongs().size() > 0) {
             Log.d("2","Reusing the available songs");
             setListAdapter(new ArrayAdapter<Song>(
@@ -121,20 +122,23 @@ public class SongListFragment extends ListFragment {
 
     }
 
-    private class DownloadWebpageTask extends AsyncTask<String, Void, List<String>> {
+    private class DownloadWebpageTask extends AsyncTask<String, Void, List<Song>> {
         @Override
-        protected List<String> doInBackground(String... urls) {
-            String temp = getCurrentTemp("43016");
-            List<String> songsForThisWeather = getSongsForTemp(temp);
+        protected List<Song> doInBackground(String... urls) {
+            // TODO We should not read from the static variable okay for now
+            //String temp = (String) SongListFragment.this.getArguments().getSerializable("com.alondhe.hawamahal.TEMP");
+            String temp = MainActivity.CURRENT_TEMP;
+            Log.d("$$$$$$$$$$$",temp);
+            List<Song> songsForThisWeather = getSongsForTemp(temp);
             return songsForThisWeather;
         }
 
         @Override
-        protected void onPostExecute(List<String> songs) {
+        protected void onPostExecute(List<Song> songs) {
             super.onPostExecute(songs);
             Log.d("Recommendations",songs.toString());
-            for(String song: songs) {
-                recoSongs.addSong(new Song(song.trim()));
+            for(Song song: songs) {
+                recoSongs.addSong(song);
             }
             setListAdapter(new ArrayAdapter<Song>(
                     getActivity(),
@@ -179,13 +183,13 @@ public class SongListFragment extends ListFragment {
             return temp;
         }
 
-        public List<String> getSongsForTemp(String temperature) {
+        public List<Song> getSongsForTemp(String temperature) {
             if("error".equals(temperature)) {
                 // TODO do not return null
                 return null;
             }
             OSClient os = null;
-            Set<String> songsForWeather = new HashSet<String>();
+            Set<Song> songsForWeather = new HashSet<Song>();
             try {
                 Log.i("Authenticating","Authenticating Now");
                 Identifier domainIdentifierById = Identifier.byId("7f5153b58a974c2d88a4a54f76808d68");
@@ -203,7 +207,7 @@ public class SongListFragment extends ListFragment {
                 List<? extends SwiftContainer> containers = os.objectStorage().containers().list();
                 int index = 0;
                 for (SwiftContainer container : containers) {
-                    if (container.getName().equals("output")) {
+                    if (container.getName().equals("spotify-output")) {//"output"
 //                        Log.d("Found output at - ",""+ index);
                         break;
                     }
@@ -227,18 +231,17 @@ public class SongListFragment extends ListFragment {
                     do {
                         str = reader.readLine();
                         if(str != null) {
-                            Log.d("Line", str);
-                            str = str.replace("(", "");
-                            str = str.replace(")", "");
-                            str = str.replace("List","");
-                            List<String> elements = Arrays.asList(str.split(","));
+                            //Log.d("Line", str);
+                            String strTemp = str.substring(1,str.indexOf(",List("));
                             // Extract the temperature
-                            double tempInC = Double.parseDouble(elements.get(0));
-                            Log.d("TempInC",""+tempInC);
+                            double tempInC = Double.parseDouble(strTemp);
+                            //Log.d("TempInC",""+tempInC);
                             // Collect songs in this record
                             if((tempInC <= upperLimit) && (tempInC >= lowerLimit)) {
-                                Log.d("Songs selected", elements.toString());
-                                songsForWeather.addAll(elements.subList(1,elements.size()));
+                                // Parse for songs
+                                Set<Song> songsFromResponse = parseSongsFromResponse(str);
+                                //Log.d("Songs selected", songsFromResponse.toString());
+                                songsForWeather.addAll(songsFromResponse);
                             }
                         }
                     } while (str != null);
@@ -250,6 +253,32 @@ public class SongListFragment extends ListFragment {
                 //???
             }
             return new ArrayList<>(songsForWeather);
+        }
+
+        private Set<Song> parseSongsFromResponse(String str) {
+            Set<Song> songsFromResponse = new HashSet<Song>();
+            Pattern p = Pattern.compile("\\{.*\\}");
+            Matcher m = p.matcher(str);
+            while(m.find()) {
+                String matchedResponse = m.group();
+                Log.d("matched  ", matchedResponse);
+                String[] songs = matchedResponse.split(",");
+                for(String song:songs) {
+                    System.out.println("Song - " + song.trim());
+                    String[] songDetails = song.split(";");
+                    if(songDetails.length == 5) {
+                        // Create a song detail object
+                        Song s = new Song();
+                        s.setSpotifyid(songDetails[0]);
+                        s.setSongName(songDetails[1]);
+                        s.setSongURL(songDetails[2]);
+                        s.setAlbumnName(songDetails[3]);
+                        s.setAlbumURL(songDetails[4]);
+                        songsFromResponse.add(s);
+                    }
+                }
+            }
+            return songsFromResponse;
         }
     }
 
