@@ -2,6 +2,7 @@ package com.alondhe.hawamahal;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -26,14 +27,18 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.prefs.PreferenceChangeEvent;
+import java.util.prefs.PreferenceChangeListener;
 
 /**
  * Retrieve the location and temperature which can be used by the next activity.
  */
-public class MainActivity extends AppCompatActivity implements LocationListener {
+public class MainActivity extends AppCompatActivity implements LocationListener{
 
     private static double DEFAULT_LAT = 40.1092;
     private static double DEFAULT_LONG = -83.1403;
+    public static String CURRENT_TEMP;
+    public static String TEMP_MARGIN = "2";
 
     private static Location mLocation;
 
@@ -191,11 +196,12 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             Button button = (Button)findViewById(R.id.idGetSongs);
             button.setText(resultMap.get("CITY") + "," + resultMap.get("COUNTRY") + "," + resultMap.get("TEMP"));
             CURRENT_TEMP = resultMap.get("TEMP");
+            if(CURRENT_TEMP != null && "".equals(CURRENT_TEMP)) {
+                CURRENT_TEMP = "4";
+            }
             Intent songListIntent = new Intent(MainActivity.this, SongListActivity.class);
             songListIntent.putExtra("com.alondhe.hawamahal.TEMP", resultMap.get("TEMP"));
             startActivity(songListIntent);
         }
     }
-    public static String CURRENT_TEMP;
-
 }

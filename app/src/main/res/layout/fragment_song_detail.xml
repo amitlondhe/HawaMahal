@@ -2,26 +2,29 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="fill_parent">
+
 <LinearLayout
-    android:layout_height="match_parent" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:layout_width="fill_parent"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical">
 
     <TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:id="@+id/song_detail"
-    style="?android:attr/textAppearanceLarge" android:layout_width="match_parent"
-    android:layout_height="wrap_content" android:padding="16dp" android:textIsSelectable="true"
-    tools:context=".SongDetailFragment"
-    android:background="#bf5353"
-        android:layout_gravity="bottom" />
+        xmlns:tools="http://schemas.android.com/tools" android:id="@+id/song_name"
+        style="?android:attr/textAppearanceLarge" android:layout_width="match_parent"
+        android:layout_height="wrap_content" android:padding="16dp" android:textIsSelectable="false"
+        tools:context=".SongDetailFragment"
+        android:background="@color/body"
+        android:text="Sample Text"
+        android:textColor="#417914"
+        android:textSize="30dp" />
 
     <ImageView
         android:layout_width="match_parent"
-        android:layout_height="fill_parent"
+        android:layout_height="match_parent"
         android:id="@+id/imageView"
-        android:layout_gravity="center_horizontal"
-        android:contentDescription="Image here"
-        android:clickable="false" />
-
-</LinearLayout>
-    </RelativeLayout>
+        android:clickable="false"
+        android:baselineAlignBottom="false"
+        android:scaleType="fitXY"
+        />
+    </LinearLayout>
+</RelativeLayout>

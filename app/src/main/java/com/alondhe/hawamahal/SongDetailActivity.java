@@ -1,5 +1,6 @@
 package com.alondhe.hawamahal;
 
+import android.graphics.drawable.AnimationDrawable;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.content.Intent;
@@ -11,6 +12,7 @@ import android.util.Log;
 import android.view.View;
 import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
+import android.widget.ImageView;
 
 /**
  * An activity representing a single Song detail screen. This
@@ -27,7 +29,9 @@ public class SongDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_song_detail);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
+//        Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_songdetail);
+        toolbar.setTitle("HawaMahal");
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -87,5 +91,20 @@ public class SongDetailActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        View imageView = findViewById(R.id.imageView);
+        if(imageView != null) {
+//            Log.d("Imageview is not null",imageView.toString());
+            //imageView.setMinimumHeight(400);
+            imageView.setBackgroundResource(R.drawable.songs_animation);
+            AnimationDrawable songAnimation = (AnimationDrawable) imageView.getBackground();
+            songAnimation.start();
+        } else {
+            Log.d("ImageView is null","***");
+        }
     }
 }

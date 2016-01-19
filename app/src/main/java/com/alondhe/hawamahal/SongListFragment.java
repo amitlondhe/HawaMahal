@@ -128,7 +128,7 @@ public class SongListFragment extends ListFragment {
             // TODO We should not read from the static variable okay for now
             //String temp = (String) SongListFragment.this.getArguments().getSerializable("com.alondhe.hawamahal.TEMP");
             String temp = MainActivity.CURRENT_TEMP;
-            Log.d("$$$$$$$$$$$",temp);
+            Log.d("$$$$$$$$$$$", temp);
             List<Song> songsForThisWeather = getSongsForTemp(temp);
             return songsForThisWeather;
         }
@@ -220,18 +220,21 @@ public class SongListFragment extends ListFragment {
                 }
                 // Find out the temp. range which is used to recommend the songs.
                 double currentTemp = Math.round(Double.parseDouble(temperature)) * 10;
-                double upperLimit = currentTemp + 2;
-                double lowerLimit = currentTemp - 2;
+                double tempMargin  = Double.parseDouble(MainActivity.TEMP_MARGIN);
+                Log.d("TempMargin in Fragment",MainActivity.TEMP_MARGIN);
+                double upperLimit = currentTemp + tempMargin;
+                double lowerLimit = currentTemp - tempMargin;
                 Log.d("Temps",currentTemp + "," + upperLimit + "," + lowerLimit);
 
                 for (SwiftObject obj : objs) {
                     DLPayload dlpayload = obj.download();
                     BufferedReader reader = new BufferedReader(new InputStreamReader(dlpayload.getInputStream()));
                     String str = null;
+                    String showSomethingToUser = null;
                     do {
                         str = reader.readLine();
                         if(str != null) {
-                            //Log.d("Line", str);
+//                            Log.d("Line", str);
                             String strTemp = str.substring(1,str.indexOf(",List("));
                             // Extract the temperature
                             double tempInC = Double.parseDouble(strTemp);
@@ -243,8 +246,16 @@ public class SongListFragment extends ListFragment {
                                 //Log.d("Songs selected", songsFromResponse.toString());
                                 songsForWeather.addAll(songsFromResponse);
                             }
+                            showSomethingToUser = str;
                         }
                     } while (str != null);
+                    // Just to make sure we show songs to the user
+                    if(songsForWeather.isEmpty() && showSomethingToUser != null) {
+                        Log.d("No Recommendations yet",songsForWeather.toString());
+                        Set<Song> songsFromResponse = parseSongsFromResponse(showSomethingToUser);
+                        //Log.d("Songs selected", songsFromResponse.toString());
+                        songsForWeather.addAll(songsFromResponse);
+                    }
 //                    Log.d("Final Recommendation", songsForWeather.toString());
                 }
             } catch (Exception e) {
@@ -261,10 +272,11 @@ public class SongListFragment extends ListFragment {
             Matcher m = p.matcher(str);
             while(m.find()) {
                 String matchedResponse = m.group();
-                Log.d("matched  ", matchedResponse);
+                //Log.d("matched  ", matchedResponse);
                 String[] songs = matchedResponse.split(",");
                 for(String song:songs) {
-                    System.out.println("Song - " + song.trim());
+                    //Log.d("Song - ", song.trim());
+                    song = song.replaceAll("[{}]","");
                     String[] songDetails = song.split(";");
                     if(songDetails.length == 5) {
                         // Create a song detail object

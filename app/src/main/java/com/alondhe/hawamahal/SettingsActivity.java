@@ -1,6 +1,7 @@
 package com.alondhe.hawamahal;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -32,5 +33,22 @@ public class SettingsActivity extends AppCompatActivity {
                 .replace(R.id.fragment_container, new SettingsFragment())
                 .commit();
     }
+
+
+/*    @Override
+    protected void onResume() {
+        Log.d("***********", "OnResume");
+        super.onResume();
+        SharedPreferences preferences = getSharedPreferences("preferences", MODE_PRIVATE);
+        getSharedPreferences("preferences",MODE_PRIVATE).registerOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.d("***********", "onPause");
+        getSharedPreferences("preferences",MODE_PRIVATE).unregisterOnSharedPreferenceChangeListener(this);
+    }*/
+
 
 }
