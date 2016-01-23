@@ -16,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import org.json.JSONObject;
 
@@ -41,6 +42,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
     public static String TEMP_MARGIN = "2";
 
     private static Location mLocation;
+    private Map<String,String> getTemperatureResult = new HashMap<String,String>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,12 +62,15 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
             e.printStackTrace();
         }
 
+        new GetTemperature().execute();
+
         final Button button = (Button)findViewById(R.id.idGetSongs);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new GetTemperature().execute();
-            }
+                Intent songListIntent = new Intent(MainActivity.this, SongListActivity.class);
+                songListIntent.putExtra("com.alondhe.hawamahal.TEMP", getTemperatureResult.get("TEMP"));
+                startActivity(songListIntent);            }
         });
     }
 
@@ -193,15 +198,26 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
 
         @Override
         protected void onPostExecute(Map<String, String> resultMap) {
-            Button button = (Button)findViewById(R.id.idGetSongs);
-            button.setText(resultMap.get("CITY") + "," + resultMap.get("COUNTRY") + "," + resultMap.get("TEMP"));
+
+            TextView city = (TextView)findViewById(R.id.idCity);
+            TextView temperature = (TextView)findViewById(R.id.idTemperature);
+
+
             CURRENT_TEMP = resultMap.get("TEMP");
             if(CURRENT_TEMP != null && "".equals(CURRENT_TEMP)) {
                 CURRENT_TEMP = "4";
             }
-            Intent songListIntent = new Intent(MainActivity.this, SongListActivity.class);
-            songListIntent.putExtra("com.alondhe.hawamahal.TEMP", resultMap.get("TEMP"));
-            startActivity(songListIntent);
+            double tempInC = 0;
+            double tempInF = 0;
+            if(CURRENT_TEMP != null) {
+                tempInC = Double.parseDouble(CURRENT_TEMP);
+                tempInF = Math.round((tempInC - 30)/1.8);
+            }
+            String text = resultMap.get("CITY") + ", " + resultMap.get("COUNTRY");
+            city.setText(text);
+            text  =  "" + tempInC + " °C / " + tempInF + " °F";
+            temperature.setText(text);
+            getTemperatureResult = resultMap;
         }
     }
 }

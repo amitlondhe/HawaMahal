@@ -3,12 +3,15 @@ package com.alondhe.hawamahal;
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import org.json.JSONObject;
 import org.openstack4j.api.OSClient;
@@ -129,6 +132,7 @@ public class SongListFragment extends ListFragment {
             //String temp = (String) SongListFragment.this.getArguments().getSerializable("com.alondhe.hawamahal.TEMP");
             String temp = MainActivity.CURRENT_TEMP;
             Log.d("$$$$$$$$$$$", temp);
+
             List<Song> songsForThisWeather = getSongsForTemp(temp);
             return songsForThisWeather;
         }
@@ -146,6 +150,8 @@ public class SongListFragment extends ListFragment {
                     android.R.id.text1,
                     recoSongs.getRecommendedSongs()
             ));
+            Toast toast = Toast.makeText(getContext(), "Tap the song you want to listen.", Toast.LENGTH_LONG);
+            toast.show();
         }
 
         public String getCurrentTemp(String zipcode){
