@@ -3,9 +3,12 @@ package com.alondhe.hawamahal;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.AnimationDrawable;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.media.Image;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -17,6 +20,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONObject;
 
@@ -53,6 +57,20 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
         setSupportActionBar(toolbar);
         toolbar.setTitle(getTitle());
 
+        ImageView imageView = (ImageView)findViewById(R.id.idAppImage);
+//        AnimationDrawable songAnimation = (AnimationDrawable) imageView.getBackground();
+//        songAnimation.start();
+        AnimationDrawable animationDrawable = new AnimationDrawable();
+        animationDrawable.addFrame(getApplicationContext().getResources().getDrawable(R.drawable.resizedimage_0),700);
+        animationDrawable.addFrame(getApplicationContext().getResources().getDrawable(R.drawable.resizedimage_1),700);
+        animationDrawable.addFrame(getApplicationContext().getResources().getDrawable(R.drawable.resizedimage_2),700);
+        animationDrawable.addFrame(getApplicationContext().getResources().getDrawable(R.drawable.resizedimage_3),700);
+        animationDrawable.addFrame(getApplicationContext().getResources().getDrawable(R.drawable.resizedimage_4), 700);
+//        imageView.setImageDrawable(animationDrawable);
+        imageView.setBackgroundDrawable(animationDrawable);
+
+        animationDrawable.start();
+
         try {
             // Acquire a reference to the system Location Manager
             LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
@@ -68,9 +86,18 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                StringBuilder toastMessage = new StringBuilder("{");
+                for(Map.Entry<String,String> entry: getTemperatureResult.entrySet()) {
+                    toastMessage.append(entry.getKey() + ":" + entry.getValue()+",");
+                }
+                toastMessage.append("}");
+                Toast toast = Toast.makeText(getApplicationContext(), toastMessage, Toast.LENGTH_LONG);
+                toast.show();
+
                 Intent songListIntent = new Intent(MainActivity.this, SongListActivity.class);
                 songListIntent.putExtra("com.alondhe.hawamahal.TEMP", getTemperatureResult.get("TEMP"));
-                startActivity(songListIntent);            }
+                startActivity(songListIntent);
+            }
         });
     }
 
@@ -140,6 +167,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                     longitude = mLocation.getLongitude();
                 }
 
+                String locationMessage = "Latitude:"+latitude+", Longitude:"+longitude;
+
                 retMap.put("LATITUDE",String.valueOf(latitude));
                 retMap.put("LONGITUDE",String.valueOf(longitude));
 
@@ -159,7 +188,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                     reader = new BufferedReader(new InputStreamReader(is));
                     while ((temp = reader.readLine()) != null) {
                         responseString = temp + responseString;
-//                        Log.d("Weather response", responseString);
+                        Log.d("Weather response", responseString);
                     }
                     // Parse the JSON
                     JSONObject weatherjson = new JSONObject(responseString);
@@ -202,16 +231,17 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
             TextView city = (TextView)findViewById(R.id.idCity);
             TextView temperature = (TextView)findViewById(R.id.idTemperature);
 
-
             CURRENT_TEMP = resultMap.get("TEMP");
-            if(CURRENT_TEMP != null && "".equals(CURRENT_TEMP)) {
+            if(CURRENT_TEMP != null && "error".equals(CURRENT_TEMP)) {
                 CURRENT_TEMP = "4";
+                Toast toast = Toast.makeText(getApplicationContext(), "Using Default Temperature.", Toast.LENGTH_LONG);
+                toast.show();
             }
             double tempInC = 0;
             double tempInF = 0;
             if(CURRENT_TEMP != null) {
                 tempInC = Double.parseDouble(CURRENT_TEMP);
-                tempInF = Math.round((tempInC - 30)/1.8);
+                tempInF = Math.round((1.8 * tempInC + 32));
             }
             String text = resultMap.get("CITY") + ", " + resultMap.get("COUNTRY");
             city.setText(text);

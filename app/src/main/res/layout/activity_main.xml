@@ -28,27 +28,28 @@
             android:layout_gravity="center"
             android:showDividers="beginning|middle|end"
             android:orientation="vertical"
-            android:background="@drawable/layout_border">
+            >
 
-            <Space
+            <ImageView
+                android:id = "@+id/idAppImage"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="0.5" />
+                android:layout_weight="2.0"
+                android:adjustViewBounds="false" />
 
             <TextView
                 android:id="@+id/idCity"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_gravity="top"
+                android:layout_gravity="bottom"
                 android:layout_weight="0.75"
                 android:textColor="#400d47"
                 android:textSize="50dp"
-                android:typeface="sans"
+                android:typeface="monospace"
                 android:text="City"
                 android:paddingStart="20dp"
                 android:paddingLeft="20dp"
                 android:layout_marginTop="10dp"
-                android:layout_marginBottom="20dp"
                 />
 
             <TextView
@@ -58,20 +59,13 @@
                 android:layout_gravity="top"
                 android:layout_weight="0.75"
                 android:textColor="#400d47"
-                android:textSize="40dp"
-                android:typeface="sans"
+                android:textSize="25dp"
+                android:typeface="monospace"
                 android:text="Temperature"
                 android:paddingStart="40dp"
                 android:paddingLeft="40dp"
-                android:layout_marginTop="10dp"
                 android:layout_marginBottom="20dp"
-                android:textStyle="italic"
-                />
-
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="0.25" />
+                android:textStyle="italic" />
 
             <Button
                 android:id="@+id/idGetSongs"
@@ -85,11 +79,11 @@
                 android:layout_marginBottom="20dp"
                 android:text="Get Some songs !!" />
 
-            <Space
+<!--            <Space
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="0.25"
-                />
+                />-->
 
         </LinearLayout>
     </FrameLayout>
