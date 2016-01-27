@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
     public static String CURRENT_TEMP;
     public static String TEMP_MARGIN = "2";
 
-    private static Location mLocation;
+    private Location mLocation;
     private Map<String,String> getTemperatureResult = new HashMap<String,String>();
 
     @Override
@@ -58,26 +58,43 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
         toolbar.setTitle(getTitle());
 
         ImageView imageView = (ImageView)findViewById(R.id.idAppImage);
-//        AnimationDrawable songAnimation = (AnimationDrawable) imageView.getBackground();
-//        songAnimation.start();
         AnimationDrawable animationDrawable = new AnimationDrawable();
         animationDrawable.addFrame(getApplicationContext().getResources().getDrawable(R.drawable.resizedimage_0),700);
         animationDrawable.addFrame(getApplicationContext().getResources().getDrawable(R.drawable.resizedimage_1),700);
         animationDrawable.addFrame(getApplicationContext().getResources().getDrawable(R.drawable.resizedimage_2),700);
         animationDrawable.addFrame(getApplicationContext().getResources().getDrawable(R.drawable.resizedimage_3),700);
         animationDrawable.addFrame(getApplicationContext().getResources().getDrawable(R.drawable.resizedimage_4), 700);
-//        imageView.setImageDrawable(animationDrawable);
         imageView.setBackgroundDrawable(animationDrawable);
-
         animationDrawable.start();
+
 
         try {
             // Acquire a reference to the system Location Manager
             LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
             locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,1,1,this);
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1, 1, this);
+            mLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            if(mLocation == null) {
+                mLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            }
+//            String message = (mLocation == null) ? "NULL LOCATION":"Location - "+mLocation.toString();
+//            Toast toast = Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG);
+//            toast.show();
         } catch(SecurityException e) {
-            e.printStackTrace();
+            Log.d("SecurityException",e.getMessage());
+            Toast toast = Toast.makeText(getApplicationContext(), "Could not access LocationManager", Toast.LENGTH_LONG);
+            toast.show();
+        }
+        if(mLocation != null) {
+            Log.d("mLocation is not null", mLocation.toString());
+            StringBuilder locationMsg = new StringBuilder();
+            locationMsg.append("{Got Location \n mLocation.LAT:"+mLocation.getLatitude());
+            locationMsg.append("\n,mLocation.LONG:"+mLocation.getLongitude());
+            locationMsg.append("}");
+            Toast toast = Toast.makeText(getApplicationContext(), locationMsg, Toast.LENGTH_LONG);
+            toast.show();
+        } else {
+
         }
 
         new GetTemperature().execute();
@@ -89,7 +106,13 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                 StringBuilder toastMessage = new StringBuilder("{");
                 for(Map.Entry<String,String> entry: getTemperatureResult.entrySet()) {
                     toastMessage.append(entry.getKey() + ":" + entry.getValue()+",");
+                    toastMessage.append("\n");
                 }
+                if(mLocation != null) {
+                    toastMessage.append("mLocation.LAT:"+mLocation.getLatitude());
+                    toastMessage.append("\n,mLocation.LONG:"+mLocation.getLongitude());
+                }
+                toastMessage.append("\n mLocation:"+ ((mLocation == null)?"null":"notnull" + "\n"));
                 toastMessage.append("}");
                 Toast toast = Toast.makeText(getApplicationContext(), toastMessage, Toast.LENGTH_LONG);
                 toast.show();
@@ -106,6 +129,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
         Log.d("1", "OnLocationChanged");
         Log.d("Location", location.toString());
         mLocation = location;
+        new GetTemperature().execute();
     }
 
     @Override
@@ -165,6 +189,11 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                 if(mLocation != null) {
                     latitude = mLocation.getLatitude();
                     longitude = mLocation.getLongitude();
+                } else {
+                    retMap.put("COUNTRY", "Could not obtain location.");
+                    retMap.put("CITY","Co");
+                    retMap.put("TEMP","Not Available");
+                    return retMap;
                 }
 
                 String locationMessage = "Latitude:"+latitude+", Longitude:"+longitude;
@@ -239,7 +268,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
             }
             double tempInC = 0;
             double tempInF = 0;
-            if(CURRENT_TEMP != null) {
+            if(CURRENT_TEMP != null && !CURRENT_TEMP.equals("Not Available")) {
                 tempInC = Double.parseDouble(CURRENT_TEMP);
                 tempInF = Math.round((1.8 * tempInC + 32));
             }
