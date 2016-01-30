@@ -140,7 +140,7 @@ public class SongListFragment extends ListFragment {
         @Override
         protected void onPostExecute(List<Song> songs) {
             super.onPostExecute(songs);
-            Log.d("Recommendations",songs.toString());
+            Log.d("Recommendations", songs.toString());
             for(Song song: songs) {
                 recoSongs.addSong(song);
             }
@@ -150,7 +150,13 @@ public class SongListFragment extends ListFragment {
                     android.R.id.text1,
                     recoSongs.getRecommendedSongs()
             ));
-            Toast toast = Toast.makeText(getContext(), "Tap the song you want to listen.", Toast.LENGTH_LONG);
+
+            String toastMessage = "Tap the song you want to listen.";
+            if(songs.isEmpty()) {
+                toastMessage = "Oops !! Please try another temperature margin from Settings to see if I can suggest some songs.";
+            }
+            Toast toast = Toast.makeText(getContext(),toastMessage , Toast.LENGTH_LONG);
+            toast.setGravity(Gravity.CENTER_VERTICAL,0,0);
             toast.show();
         }
 

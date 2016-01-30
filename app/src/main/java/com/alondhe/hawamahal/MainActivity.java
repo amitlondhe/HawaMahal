@@ -14,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -82,7 +83,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
 //            toast.show();
         } catch(SecurityException e) {
             Log.d("SecurityException",e.getMessage());
-            Toast toast = Toast.makeText(getApplicationContext(), "Could not access LocationManager", Toast.LENGTH_LONG);
+            Toast toast = Toast.makeText(getApplicationContext(), "Application Cannot access LocationManager.", Toast.LENGTH_LONG);
+            toast.setGravity(Gravity.CENTER_VERTICAL,0,0);
             toast.show();
         }
         if(mLocation != null) {
@@ -91,7 +93,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
             locationMsg.append("{Got Location \n mLocation.LAT:"+mLocation.getLatitude());
             locationMsg.append("\n,mLocation.LONG:"+mLocation.getLongitude());
             locationMsg.append("}");
-            Toast toast = Toast.makeText(getApplicationContext(), locationMsg, Toast.LENGTH_LONG);
+            Toast toast = Toast.makeText(getApplicationContext(), locationMsg, Toast.LENGTH_SHORT);
+            toast.setGravity(Gravity.CENTER_VERTICAL,0,0);
             toast.show();
         } else {
 
@@ -103,7 +106,9 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                StringBuilder toastMessage = new StringBuilder("{");
+                // Debugging toast message
+                StringBuilder toastMessage = new StringBuilder();
+                toastMessage.append("Retrieving Songs for {");
                 for(Map.Entry<String,String> entry: getTemperatureResult.entrySet()) {
                     toastMessage.append(entry.getKey() + ":" + entry.getValue()+",");
                     toastMessage.append("\n");
@@ -115,6 +120,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                 toastMessage.append("\n mLocation:"+ ((mLocation == null)?"null":"notnull" + "\n"));
                 toastMessage.append("}");
                 Toast toast = Toast.makeText(getApplicationContext(), toastMessage, Toast.LENGTH_LONG);
+                toast.setGravity(Gravity.CENTER_VERTICAL,0,0);
                 toast.show();
 
                 Intent songListIntent = new Intent(MainActivity.this, SongListActivity.class);
